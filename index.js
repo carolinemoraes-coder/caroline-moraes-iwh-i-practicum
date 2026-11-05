@@ -19,7 +19,18 @@ const headers = {
     Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
     'Content-Type': 'application/json'
 };
-
+// ROUTE 1 - Homepage: lists the custom object records in a table
+app.get('/', async (req, res) => {
+    const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJECT}?properties=${PROPERTIES.join(',')}&limit=100`;
+    try {
+        const response = await axios.get(url, { headers });
+        const data = response.data.results;
+        res.render('homepage', { title: 'Books | Integrating With HubSpot I Practicum', data });
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        res.status(500).send('Could not load the records from HubSpot.');
+    }
+});
 // ROUTE 2 - Renders the form to create a new record
 app.get('/update-cobj', (req, res) => {
     res.render('updates', { title: 'Update Custom Object Form | Integrating With HubSpot I Practicum' });
