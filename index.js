@@ -24,5 +24,22 @@ const headers = {
 app.get('/update-cobj', (req, res) => {
     res.render('updates', { title: 'Update Custom Object Form | Integrating With HubSpot I Practicum' });
 });
-
+// ROUTE 3 - Sends the form data to HubSpot and redirects to the homepage
+app.post('/update-cobj', async (req, res) => {
+    const newRecord = {
+        properties: {
+            name: req.body.name,
+            author: req.body.author,
+            genre: req.body.genre
+        }
+    };
+    const url = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJECT}`;
+    try {
+        await axios.post(url, newRecord, { headers });
+        res.redirect('/');
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        res.status(500).send('Could not create the record in HubSpot.');
+    }
+});
 app.listen(3000, () => console.log('Listening on http://localhost:3000'));
